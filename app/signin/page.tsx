@@ -8,11 +8,10 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Briefcase, ArrowLeft } from "lucide-react"
+import { Briefcase, ArrowLeft } from 'lucide-react'
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { toast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { getBaseUrl } from "@/lib/utils/get-base-url"
 
 export default function SignInPage() {
   const [email, setEmail] = useState("")
@@ -35,16 +34,12 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
-      // Use the utility function to get the correct base URL
-      const baseUrl = getBaseUrl()
-      const redirectUrl = `${baseUrl}/auth/callback`
+      // Use NEXT_PUBLIC_SITE_URL directly for the redirect URL
+      const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
 
       console.log("=== SIGN IN DEBUG ===")
-      console.log("Base URL:", baseUrl)
-      console.log("Redirect URL:", redirectUrl)
-      console.log("VERCEL_URL:", process.env.NEXT_PUBLIC_VERCEL_URL)
       console.log("SITE_URL:", process.env.NEXT_PUBLIC_SITE_URL)
-      console.log("Window origin:", typeof window !== "undefined" ? window.location.origin : "N/A")
+      console.log("Redirect URL:", redirectUrl)
       console.log("===================")
 
       // Send magic link to any email address
