@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Briefcase, ArrowLeft } from 'lucide-react'
+import { Briefcase, ArrowLeft } from "lucide-react"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { toast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
@@ -34,11 +34,22 @@ export default function SignInPage() {
     setIsLoading(true)
 
     try {
-      // Use NEXT_PUBLIC_SITE_URL directly for the redirect URL
-      const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+      // Get the site URL with fallbacks
+      const siteUrl =
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : null) ||
+        (typeof window !== "undefined" ? window.location.origin : null)
+
+      if (!siteUrl) {
+        throw new Error("Unable to determine site URL for redirect")
+      }
+
+      const redirectUrl = `${siteUrl}/auth/callback`
 
       console.log("=== SIGN IN DEBUG ===")
       console.log("SITE_URL:", process.env.NEXT_PUBLIC_SITE_URL)
+      console.log("VERCEL_URL:", process.env.NEXT_PUBLIC_VERCEL_URL)
+      console.log("Final site URL:", siteUrl)
       console.log("Redirect URL:", redirectUrl)
       console.log("===================")
 
@@ -67,7 +78,8 @@ export default function SignInPage() {
       console.error("Sign in error:", error)
       toast({
         title: "Error",
-        description: "There was a problem sending the magic link. Please try again.",
+        description:
+          error instanceof Error ? error.message : "There was a problem sending the magic link. Please try again.",
         variant: "destructive",
       })
     } finally {
